@@ -1,0 +1,312 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    list-style: none;
+}
+
+body {
+    background: white;
+    font-family: Arial, sans-serif;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.banner-container {
+    width: 100%;
+    margin: 0 auto;
+}
+
+
+/* Header */
+.back {
+    padding: 32px 0;
+    background-color: #067f7f;
+}
+
+.menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1000;
+}
+
+.logo-ohana {
+    width: 10%;
+    height: auto;
+    margin: 0px;
+}
+
+.menu .navbar ul li {
+    position: relative;
+    float: left;
+}
+
+.menu .navbar ul li a {
+    font-size: 18px;
+    padding: 20px;
+    color: white;
+    display: block;
+}
+
+#menu {
+    display: none;
+}
+
+.menu .navbar ul li a:hover {
+    color: gray;
+}
+
+.menu-icono {
+    width: 25px;
+}
+
+.menu label {
+    cursor: pointer;
+    display: none;
+}
+
+@media(max-width: 991px) {
+    .menu {
+        padding: 30px;
+    }
+
+    .menu label {
+        display: initial;
+        color: white;
+    }
+
+    .back {
+        padding: 47px 0;
+    }
+
+    .menu .navbar {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: #067f7f;
+        display: none;
+    }
+
+    .menu .navbar ul li {
+        width: 100;
+    }
+
+    menu:checked ~ .navbar {
+        display: initial;
+    }
+}
+
+/* Sección 1: Banner */
+.banner {
+    position: relative;
+    background-color: #067f7f;
+    margin-bottom: 5px;
+    margin: 0%;
+    width: 100%;
+}
+
+.banner-img {
+    width: 110%;
+    margin: 0%;
+    object-fit: cover;
+    opacity: 40%;
+}
+
+.banner-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+}
+
+.banner-text h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+.banner-text p {
+    font-size: 18px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Sección 2: Equipo */
+.equipo {
+    padding: 1% 0;
+    background-color: #f9f9f9;
+}
+
+.equipo h2 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 40px;
+}
+
+.cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+}
+
+.card {
+    width: calc(33.33% - 20px);
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+/* Contenido de la tarjeta */
+.card .contenido {
+    position: relative;
+    padding-bottom: 20px; 
+}
+
+/* Imagen del colaborador (cuadrada) */
+.card .contenido .imagen-colaborador {
+    width: 100%;
+    height: 0;
+    padding-top: 100%; 
+    overflow: hidden;
+    position: relative;
+}
+
+.card .contenido .imagen-colaborador img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+}
+
+/* Información del colaborador */
+.card .contenido .info-colaborador {
+    padding: 20px;
+    background-color: #067f7f;
+    color: white;
+}
+
+.card .contenido .info-colaborador h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.card .contenido .info-colaborador p {
+    font-size: 16px;
+}
+
+/* Descripción que aparece al hacer hover */
+.card .descripcion {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    background-color: #f9f9f9;
+    color: black;
+    display: none;
+    z-index: 2;
+    text-align: center;
+}
+
+.card .descripcion p {
+    font-size: 16px;
+}
+
+.card .descripcion a {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #067f7f;
+    color: white;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-top: 20px;
+}
+
+/* Efecto hover: ocultar la imagen y mostrar la descripción */
+.card:hover .contenido {
+    opacity: 0;
+}
+
+.card:hover .descripcion {
+    display: block;
+}
+
+@media(max-width: 991px) {
+    .card {
+        width: 100%;
+    }
+}
+
+footer {
+    background-color: #8cb5ae;
+    color: #fff;
+    padding: 0.2%;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: smaller;
+}
+
+.footer-content {
+    width: 100%;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.footer-info {
+    text-align: left;
+    flex-basis: 40%;
+    margin-left: 1%;
+}
+
+.footer-info p {
+    margin: 5px 0;
+}
+
+.social-links {
+    display: flex;
+    justify-content: right;
+    flex-basis: 50%;
+    margin-left: auto;
+}
+
+.social-links a {
+    margin: 0 15px;
+    display: inline-block;
+}
+
+.social-links img {
+    width: 30px; /* Ajusta el tamaño de los iconos */
+    height: 30px;
+    transition: transform 0.3s ease;
+}
+
+.social-links a:hover img {
+    transform: scale(1.1); /* Efecto hover para los iconos */
+}

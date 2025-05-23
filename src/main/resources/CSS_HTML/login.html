@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio sesion</title>
+    <link rel="stylesheet" href="styleslogin.css">
+</head>
+<body>
+<header>
+    <div class="back">
+        <div class="menu container">
+            <img src="images/logo2.png" alt="logo-OHANA" class="logo-ohana">
+            <input type="checkbox" id="menu"/>
+            <label for="menu">
+                <img src="images/menu.jpg" class="menu-icono" alt="">
+            </label>
+            <nav class="navbar">
+                <ul>
+                    <li><a href="OHANA.html">Inicio</a></li>
+                    <li><a href="#servicios">Nosotros</a></li>
+                    <li><a href="#contacto">Contacto</a></li>
+                    <li><a href="#buscar">Buscar</a></li>
+                    <li><a href="inicio.html">Inicia Sesion</a></li>
+                    <li><a href="registro.html">Registrate</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<section class="form-register">
+    <h4>Tu compañero fiel te agradece cada visita. Inicia sesión y sigamos cuidando de él.</h4>
+    <form action="login" method="post">
+        <label class="titulo">Ingrese su correo</label><br>
+        <input class="controls" type="email" name="email" required><br>
+        <label>Contraseña</label><br>
+        <input class="controls" type="password" name="password" required minlength="8" maxlength="16"><br>
+        <input type="checkbox" id="miCheckbox">
+        <label for="miCheckbox" class="custom-checkbox">
+            <span class="box"></span>
+            Desea recordar sus datos
+        </label><br>
+        <input class="botons" type="submit" value="Iniciar sesion"><br>
+        <p><a href="registro.html">No tengo una cuenta</a></p><br>
+        <p><a href="restaurar.html">Olvide mi contraseña</a></p>
+    </form>
+</section>
+</body>
+</html>
