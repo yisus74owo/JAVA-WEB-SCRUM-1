@@ -17,7 +17,7 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
 
         // Credenciales hardcodeadas (admin@gmail.com / admin)
-        if("admin@gmail.com".equals(email) && "admin".equals(password)) {
+        if("admin@gmail.com".equals(email) && "admin123".equals(password)) {
             // Crear objeto Usuario
             Usuario usuario = new Usuario();
             usuario.setEmail(email);

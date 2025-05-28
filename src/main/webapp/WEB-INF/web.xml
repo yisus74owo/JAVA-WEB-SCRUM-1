@@ -4,7 +4,9 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
          http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
-
+    <welcome-file-list>
+        <welcome-file>login.html</welcome-file>
+    </welcome-file-list>
     <!-- Configuración del servlet (opcional si usas anotaciones) -->
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
@@ -25,7 +27,4 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <session-config>
-        <session-timeout>30</session-timeout>
-    </session-config>
 </web-app>
