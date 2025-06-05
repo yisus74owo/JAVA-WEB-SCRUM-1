@@ -1,0 +1,159 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    list-style: none;
+}
+body {
+    background: white;
+    font-family: Arial, sans-serif;
+    background-image: url(images/fondo1.jpg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
+    min-height: 100vh;      
+}
+.container{
+    max-width: 1100px;
+    margin: 0 auto;
+}
+.back {
+    padding: 32px 0;
+    background-color: #067f7f;
+}
+.menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1000;
+}
+.logo-ohana{
+    width: 10%;
+    height: auto;
+    margin: 0px;
+}
+.menu .navbar ul li {
+    position: relative;
+    float: left;
+}
+.menu .navbar ul li a {
+    font-size: 18px;
+    padding: 20px;
+    color: white;
+    display: block;
+}
+#menu {
+    display: none;
+}
+.menu .navbar ul li a:hover{
+    color: gray;
+}
+.menu-icono {
+    width: 25px;
+}
+.menu label {
+    cursor: pointer;
+    display: none;
+}
+
+@media(max-width:991px) {
+
+    .menu {
+        padding: 30px;
+    }
+
+    .menu label {
+        display: initial;
+        color: white;
+    }
+
+    .back {
+        padding: 47px 0;
+    }
+
+    .menu .navbar{
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: #067f7f;
+        display: none;
+
+    }
+
+    .menu .navbar ul li {
+        width: 100;
+    }
+
+    menu:checked ~ .navbar{
+        display: initial;
+    }
+}
+
+    .form-register {
+        width: 400px;
+        background: #067f7f;
+        padding: 30px; 
+        margin: left;
+        margin-left: 350px;
+        margin-top: 50px;
+        border-radius: 4px;
+        font-family: Arial, sans-serif;
+        color: white;
+        box-shadow: 7px 13px 37px #000;
+    
+        
+    }
+    .form-register h4 {
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+
+    .controls {
+        width: 100%;
+        background: rgb(210, 212, 212);
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 16px;
+        border: 1px solid black;
+        font-family: Arial, sans-serifs;
+        font-size: 18px;
+        color: rgb(0, 0, 0);
+    }
+    
+    .form-register p {
+        height: 40px;
+        text-align: center;
+        font-size: 18px;
+        line-height: 40px;
+        
+    }
+    .form-register a {
+        color: white;
+        text-decoration: none;
+    }
+    .form-register a:hover{
+        color: white;
+        text-decoration: underline;
+    }
+    .form-register .botons{
+        width: 100%;
+        background: white;
+        border: none;
+        padding: 12px;
+        color: black;
+        margin: 16px 0;
+        font-size: 16px;
+
+    }
+    .form-register label{
+        height: 40px;
+        line-height: 30px;
+    }
+    
+ 

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Cabeceras anti-caché esenciales -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Inicio de sesión | OHANA</title>
+    <link rel="stylesheet" href="styleslogin.css">
+    <script>
+        // Bloqueo completo del retroceso del navegador
+        history.pushState(null, null, location.href);
+        window.onpopstate = function() {
+            history.go(1);
+            window.location.reload(true);
+        };
+
+        // Mostrar mensaje de error si existe
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // Manejar mensaje de error
+            if (urlParams.has('error')) {
+                alert('Correo o contraseña incorrectos. Intente nuevamente.');
+            }
+
+            // Manejar mensaje de logout
+            if (urlParams.has('logout')) {
+                alert('Has cerrado sesión correctamente');
+            }
+
+            // Limpiar parámetros de la URL
+            if (window.history.replaceState) {
+                const cleanUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
+
+            // Configurar campo oculto para redirección
+            const redirectParam = urlParams.get('redirect');
+            if (redirectParam) {
+                const redirectInput = document.createElement('input');
+                redirectInput.type = 'hidden';
+                redirectInput.name = 'redirect';
+                redirectInput.value = redirectParam;
+                document.querySelector('form').appendChild(redirectInput);
+            }
+        });
+
+        // Función para mostrar/ocultar contraseña
+        function togglePassword() {
+            const passwordInput = document.querySelector('input[name="password"]');
+            const toggleBtn = document.querySelector('.toggle-password');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = '👁️‍🗨️';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = '👁️';
+            }
+        }
+    </script>
+</head>
+<body>
+<header>
+    <div class="back">
+        <div class="menu container">
+            <a href="OHANA.html"><img src="images/logo2.png" alt="logo-OHANA" class="logo-ohana"></a>
+            <input type="checkbox" id="menu"/>
+            <label for="menu">
+                <img src="images/menu.jpg" class="menu-icono" alt="Menú">
+            </label>
+            <nav class="navbar">
+                <ul>
+                    <li><a href="OHANA.html">Inicio</a></li>
+                    <li><a href="#servicios">Nosotros</a></li>
+                    <li><a href="#contacto">Contacto</a></li>
+                    <li><a href="#buscar">Buscar</a></li>
+                    <li><a href="login.html" class="active">Inicia Sesión</a></li>
+                    <li><a href="registro.html">Regístrate</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<section class="form-register">
+    <h4>Tu compañero fiel te agradece cada visita. Inicia sesión y sigamos cuidando de él.</h4>
+
+    <form method="post" action="LoginServlet" autocomplete="on">
+        <div class="form-group">
+            <label for="email" class="titulo">Correo electrónico</label>
+            <input class="controls" type="email" id="email" name="email" required
+                   placeholder="ejemplo@correo.com" autocomplete="username">
+        </div>
+
+        <div class="form-group">
+            <label for="password">Contraseña</label>
+            <div class="password-container">
+                <input class="controls" type="password" id="password" name="password"
+                       required minlength="8" maxlength="16" placeholder="••••••••"
+                       autocomplete="current-password">
+                <button type="button" class="toggle-password" onclick="togglePassword()">👁️</button>
+            </div>
+        </div>
+
+        <div class="form-group remember-me">
+            <input type="checkbox" id="remember" name="remember">
+            <label for="remember" class="custom-checkbox">
+                <span class="box"></span>
+                Recordar mis datos
+            </label>
+        </div>
+
+        <div class="form-group">
+            <input class="botons" type="submit" value="Iniciar sesión">
+        </div>
+
+        <div class="form-links">
+            <p><a href="registro.html">¿No tienes una cuenta? Regístrate</a></p>
+            <p><a href="restaurar.html">¿Olvidaste tu contraseña?</a></p>
+        </div>
+    </form>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // Manejar mensajes con SweetAlert (más profesional que alert())
+            if (urlParams.has('error')) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Credenciales incorrectas. Por favor, intente nuevamente.',
+                    confirmButtonColor: '#3085d6'
+                });
+            }
+
+            if (urlParams.has('logout')) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sesión cerrada',
+                    text: 'Has salido del sistema correctamente.',
+                    confirmButtonColor: '#3085d6',
+                    timer: 3000
+                });
+            }
+
+            // Limpiar parámetros de la URL sin recargar
+            if (window.history.replaceState) {
+                const cleanUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
+        });
+    </script>
+</section>
+
+</body>
+</html>

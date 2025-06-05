@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modulo de Ventas - Veterinaria</title>
+    <link rel="stylesheet" href="stylessales.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div>
+                <img src="images/logo2.png" alt="logo-OHANA" class="logo-ohana">
+            </div>
+            <div class="header-icons">
+                <button class="icon-button">🔔</button>
+                <button class="icon-button">⚙️</button>
+            </div>
+            <button class="user-button">
+                <div class="user-profile">
+                    <img src="images/profile-pic.jpg" alt="Imagen de perfil" class="profile-image">
+                    <div class="user-info">
+                        <div class="user-name">Juan Pérez</div>
+                        <div class="user-position">Veterinario</div>
+                    </div>
+                </div>
+            </button>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="content">
+            <section class="top-buttons">
+                <button class="fast-button">Ver Resumen de Ventas</button>
+                <button class="fast-button">Agregar Nueva Factura</button>
+                <button class="fast-button">Consultar Cliente</button>
+                <button class="fast-button">Consultar Factura</button>
+                <button class="fast-button">Generar Reporte</button>
+        </section>
+            <div class="main-content-grid">
+                <div class="left-half">
+                    <button class="button-sales"><h1>Ventas Recientes</h1></button>
+                    <table class="recent-sales">
+                        <thead>
+                            <tr>
+                                <th>ID Factura</th>
+                                <th>Cliente</th>
+                                <th>Total</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#001</td>
+                                <td>María López</td>
+                                <td>$120</td>
+                                <td>2024-10-01</td>
+                            </tr>
+                            <tr>
+                                <td>#002</td>
+                                <td>Carlos Gómez</td>
+                                <td>$80</td>
+                                <td>2024-10-03</td>
+                            </tr>
+                            <tr>
+                                <td>#003</td>
+                                <td>Ana Sánchez</td>
+                                <td>$200</td>
+                                <td>2024-10-05</td>
+                            </tr>
+                            <tr>
+                                <td>#004</td>
+                                <td>Pedro Martínez</td>
+                                <td>$150</td>
+                                <td>2024-10-06</td>
+                            </tr>
+                            <tr>
+                                <td>#005</td>
+                                <td>Laura Pérez</td>
+                                <td>$95</td>
+                                <td>2024-10-07</td>
+                            </tr>
+                            <tr>
+                                <td>#006</td>
+                                <td>Juan Torres</td>
+                                <td>$50</td>
+                                <td>2024-10-08</td>
+                            </tr>
+                            <tr>
+                                <td>#007</td>
+                                <td>Elena Rodríguez</td>
+                                <td>$180</td>
+                                <td>2024-10-09</td>
+                            </tr>
+                            <tr>
+                                <td>#008</td>
+                                <td>Lucas García</td>
+                                <td>$120</td>
+                                <td>2024-10-10</td>
+                            </tr>
+                            <tr>
+                                <td>#009</td>
+                                <td>Antonio Fernández</td>
+                                <td>$75</td>
+                                <td>2024-10-11</td>
+                            </tr>
+                            <tr>
+                                <td>#010</td>
+                                <td>Raquel Díaz</td>
+                                <td>$130</td>
+                                <td>2024-10-12</td>
+                            </tr>
+                            <tr>
+                                <td>#011</td>
+                                <td>Mario Herrera</td>
+                                <td>$200</td>
+                                <td>2024-10-13</td>
+                            </tr>
+                            <tr>
+                                <td>#012</td>
+                                <td>Carmen Jiménez</td>
+                                <td>$90</td>
+                                <td>2024-10-14</td>
+                            </tr>
+                            <tr>
+                                <td>#013</td>
+                                <td>Fernando Ruiz</td>
+                                <td>$110</td>
+                                <td>2024-10-15</td>
+                            </tr>
+                            <tr>
+                                <td>#014</td>
+                                <td>Patricia Morales</td>
+                                <td>$160</td>
+                                <td>2024-10-16</td>
+                            </tr>
+                            <tr>
+                                <td>#015</td>
+                                <td>Juanita Gómez</td>
+                                <td>$85</td>
+                                <td>2024-10-17</td>
+                            </tr>
+                            <tr>
+                                <td>#016</td>
+                                <td>Ricardo Sánchez</td>
+                                <td>$145</td>
+                                <td>2024-10-18</td>
+                            </tr>
+                            <tr>
+                                <td>#017</td>
+                                <td>Verónica Castro</td>
+                                <td>$110</td>
+                                <td>2024-10-19</td>
+                            </tr>
+                            <tr>
+                                <td>#018</td>
+                                <td>Javier García</td>
+                                <td>$130</td>
+                                <td>2024-10-20</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                </div>
+                <div class="button-grid">
+                    <div class="button-item">
+                        <button class="button-text"><h1>Ventas hoy</h1></button>
+                        <div class="image-container">
+                            <img src="images/graficoventas1ia.jpg" alt="Resumen de Ventas">
+                        </div>
+                    </div>
+                
+                    <div class="button-item">
+                        <button class="button-text"><h1>Mas vendidos</h1></button>
+                        <div class="image-container">
+                            <img src="images/graficoventas2ia.jpg" alt="Stock Disponible">
+                        </div>
+                    </div>
+                
+                    <div class="button-item">
+                        <button class="button-text"><h1>Clientes Frecuentes</h1></button>
+                        <div class="image-container">
+                            <img src="images/graficoventas3ia.jpg" alt="Domicilios">
+                        </div>
+                    </div>
+                
+                    <div class="button-item">
+                        <button class="button-text"><h1>Resumen mensual</h1></button>
+                        <div class="image-container">
+                            <img src="images/graficoventas4ia.jpg" alt="OHANA Shop">
+                        </div>
+                    </div>
+                </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <!-- Sección de derechos reservados, soporte técnico y versión -->
+            <div class="footer-info">
+                <p>Soporte técnico: soporte@veterinaria.com</p>
+                <p>Versión 2.3.5 - Última actualización: Octubre 2024</p>
+            </div>
+    
+            <!-- Sección de redes sociales -->
+            <div class="social-links">
+                <a href="https://facebook.com/veterinaria" target="_blank" aria-label="Facebook">
+                    <img src="images/facebook-logo.png" alt="Facebook" />
+                </a>
+                <a href="https://instagram.com/veterinaria" target="_blank" aria-label="Instagram">
+                    <img src="images/instagram-logo.png" alt="Instagram" />
+                </a>
+                <a href="https://twitter.com/veterinaria" target="_blank" aria-label="X">
+                    <img src="images/x-logo.png" alt="Twitter" />
+                </a>
+                <a href="https://www.tiktok.com/es/" target="_blank" aria-label="TikTok">
+                    <img src="images/tiktok-logo.png" alt="TikTok" />
+                </a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
