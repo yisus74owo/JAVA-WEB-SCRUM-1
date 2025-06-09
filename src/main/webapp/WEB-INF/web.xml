@@ -26,5 +26,12 @@
         <filter-name>AuthFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-
+    <servlet>
+        <servlet-name>TablaProductos</servlet-name>
+        <servlet-class>TablaProductosServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TablaProductos</servlet-name>
+        <url-pattern>/productos</url-pattern>
+    </servlet-mapping>
 </web-app>
