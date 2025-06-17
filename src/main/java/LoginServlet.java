@@ -36,7 +36,7 @@ public class LoginServlet extends HttpServlet {
             session.setMaxInactiveInterval(30 * 60); // La sesión durará 30 minutos sin actividad
 
             // Redirige al usuario a la página principal (main.html)
-            response.sendRedirect("main.html");
+            response.sendRedirect("inventorymodule.html");
         } else {
             // Si los datos son incorrectos, redirige al login con un mensaje de error
             response.sendRedirect("login.html?error=1");

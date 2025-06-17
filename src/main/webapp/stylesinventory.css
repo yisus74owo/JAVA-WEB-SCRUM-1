@@ -705,3 +705,18 @@ header {
         grid-template-columns: 1fr;
     }
 }
+
+.category-item {
+    cursor: pointer;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+.category-item:hover {
+    background-color: #f0f0f0;
+}
+.category-item.active {
+    background-color: #e0e0ff;
+    font-weight: bold;
+}
