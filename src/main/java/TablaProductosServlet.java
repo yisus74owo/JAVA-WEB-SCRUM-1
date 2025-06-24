@@ -1,4 +1,3 @@
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -42,14 +41,14 @@ public class TablaProductosServlet extends HttpServlet {
             imprimirResultados(rs, out);
 
         } catch (Exception e) {
-            out.println("<tr><td colspan='10'>Error: " + e.getMessage() + "</td></tr>");
+            out.println("<tr><td colspan='11'>Error: " + e.getMessage() + "</td></tr>");
         }
     }
 
     private void imprimirResultados(ResultSet rs, PrintWriter out) throws SQLException {
         while (rs.next()) {
+            int id = rs.getInt("idProducto");
             out.println("<tr>");
-            out.println("<td>" + rs.getInt("idProducto") + "</td>");
             out.println("<td>" + rs.getString("Nombre_Producto") + "</td>");
             out.println("<td>" + rs.getString("Categoria") + "</td>");
             out.println("<td>" + rs.getString("Marca_Producto") + "</td>");
@@ -59,7 +58,12 @@ public class TablaProductosServlet extends HttpServlet {
             out.println("<td>" + rs.getDate("Fecha_Caducidad") + "</td>");
             out.println("<td>" + rs.getString("Descripcion_Producto") + "</td>");
             out.println("<td>" + rs.getInt("Stock_Producto") + "</td>");
+            out.println("<td>" +
+                    "<button class='delete-btn' onclick='eliminarProducto(" + id + ", this)'>🗑️</button> " +
+                    "<button class='edit-btn' onclick='editarProducto(" + id + ")'>✏️</button>" +
+                    "</td>");
             out.println("</tr>");
+
         }
     }
 }

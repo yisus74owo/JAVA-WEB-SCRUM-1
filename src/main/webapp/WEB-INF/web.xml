@@ -4,10 +4,13 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
          http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
+
+    <!-- Página de inicio -->
     <welcome-file-list>
         <welcome-file>login.html</welcome-file>
     </welcome-file-list>
-    <!-- Configuración del servlet (opcional si usas anotaciones) -->
+
+    <!-- Servlet de inicio de sesión -->
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
         <servlet-class>LoginServlet</servlet-class>
@@ -17,7 +20,7 @@
         <url-pattern>/LoginServlet</url-pattern>
     </servlet-mapping>
 
-    <!-- Configuración del filtro de autenticación -->
+    <!-- Filtro de autenticación -->
     <filter>
         <filter-name>AuthFilter</filter-name>
         <filter-class>AuthFilter</filter-class>
@@ -26,6 +29,8 @@
         <filter-name>AuthFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+
+    <!-- Servlet para la tabla de productos -->
     <servlet>
         <servlet-name>TablaProductos</servlet-name>
         <servlet-class>TablaProductosServlet</servlet-class>
@@ -34,4 +39,16 @@
         <servlet-name>TablaProductos</servlet-name>
         <url-pattern>/productos</url-pattern>
     </servlet-mapping>
+
+    <!-- Servlet para editar producto -->
+    <servlet>
+        <servlet-name>EditarProductoServlet</servlet-name>
+        <servlet-class>EditarProductoServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>EditarProductoServlet</servlet-name>
+        <url-pattern>/api/productos/editar/*</url-pattern>
+    </servlet-mapping>
+
 </web-app>

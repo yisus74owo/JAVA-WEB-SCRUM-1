@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Producto - Veterinaria</title>
+    <link rel="stylesheet" href="productoform.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<div class="product-form-container visible">
+    <form id="productForm" class="product-form">
+        <div class="form-header">
+            <h3><i class="fas fa-paw"></i> <span>Agregar Nuevo Producto</span></h3>
+            <button type="button" class="close-btn" onclick="window.location.href='inventorymodule.html'">
+                &times;
+            </button>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="nombre">Nombre del Producto*</label>
+                    <input type="text" id="nombre" name="Nombre_Producto" required placeholder="Ej: Antiparasitario Canino">
+                </div>
+
+                <div class="form-group">
+                    <label for="categoria">Categoría*</label>
+                    <select id="categoria" name="Categoria" required>
+                        <option value="">Seleccione una categoría</option>
+                        <option value="Medicamento">Medicamento</option>
+                        <option value="Alimento">Alimento</option>
+                        <option value="Accesorio">Accesorio</option>
+                        <option value="Insumo">Insumo</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="marca">Marca*</label>
+                    <input type="text" id="marca" name="Marca_Producto" required placeholder="Ej: PetCare">
+                </div>
+
+                <div class="form-group">
+                    <label for="proveedor">Proveedor*</label>
+                    <input type="text" id="proveedor" name="Nombre_Proveedor" required placeholder="Ej: Distribuidora Vet">
+                </div>
+            </div>
+
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="cantidad">Cantidad*</label>
+                    <input type="number" id="cantidad" name="Cantidad_Producto" required min="1" placeholder="Ej: 50">
+                </div>
+
+                <div class="form-group">
+                    <label for="precio">Precio Unitario*</label>
+                    <div class="input-with-symbol">
+                        <span>$</span>
+                        <input type="number" id="precio" name="Precio_Producto" required step="0.01" min="0" placeholder="0.00">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="stock">Stock Mínimo*</label>
+                    <input type="number" id="stock" name="Stock_Producto" required min="1" placeholder="Ej: 10">
+                </div>
+
+                <div class="form-group">
+                    <label for="caducidad">Fecha de Caducidad*</label>
+                    <input type="date" id="caducidad" name="Fecha_Caducidad" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group full-width">
+            <label for="descripcion">Descripción*</label>
+            <textarea id="descripcion" name="Descripcion_Producto" required placeholder="Descripción detallada del producto..." rows="3"></textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="cancel-btn" onclick="window.location.href='inventorymodule.html'">
+                Cancelar
+            </button>
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-save"></i> Guardar Producto
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Configurar fecha mínima (mañana)
+        const fechaInput = document.getElementById('caducidad');
+        const hoy = new Date();
+        hoy.setDate(hoy.getDate() + 1);
+        fechaInput.min = hoy.toISOString().split('T')[0];
+
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Validar fecha
+            const fechaSeleccionada = new Date(document.getElementById('caducidad').value);
+            if (fechaSeleccionada <= new Date()) {
+                alert('La fecha de caducidad debe ser futura');
+                return;
+            }
+
+            const formData = new FormData(this);
+            const producto = {
+                Nombre_Producto: formData.get('Nombre_Producto'),
+                Categoria: formData.get('Categoria'),
+                Marca_Producto: formData.get('Marca_Producto'),
+                Cantidad_Producto: parseInt(formData.get('Cantidad_Producto')),
+                Precio_Producto: parseFloat(formData.get('Precio_Producto')),
+                Nombre_Proveedor: formData.get('Nombre_Proveedor'),
+                Fecha_Caducidad: formData.get('Fecha_Caducidad'),
+                Descripcion_Producto: formData.get('Descripcion_Producto'),
+                Stock_Producto: parseInt(formData.get('Stock_Producto'))
+            };
+
+            const contextPath = '/' + window.location.pathname.split('/')[1];
+
+            fetch(`${contextPath}/api/productos/crear`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(producto)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw new Error(err.error || 'Error del servidor') });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert('Producto creado exitosamente');
+                    window.location.href = 'inventorymodule.html';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al crear producto: ' + error.message);
+                });
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,4 +1,3 @@
-/* Estilos generales */
 :root {
     --primary-color: #067f7f;
     --primary-dark: #056767;
@@ -31,7 +30,6 @@ body {
     flex-direction: column;
 }
 
-/* Header (sin cambios como solicitaste) */
 header {
     background-color: var(--primary-color);
     color: white;
@@ -40,19 +38,19 @@ header {
 
 .header-container {
     display: flex;
-    align-items: center; 
+    align-items: center;
     justify-content: space-between;
 }
 
 .logo-ohana {
-    width: 20%; 
+    width: 20%;
     height: auto;
     margin: 0;
 }
 
 .header-icons {
     display: flex;
-    gap: 10px; 
+    gap: 10px;
     margin-left: auto;
 }
 
@@ -69,7 +67,7 @@ header {
     align-items: center;
     background-color: transparent;
     border: none;
-    border-radius: 8px; 
+    border-radius: 8px;
     padding: 0.1% 0.1%;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -82,15 +80,15 @@ header {
 
 .user-profile {
     display: flex;
-    align-items: center; 
-    margin-right: 10px; 
+    align-items: center;
+    margin-right: 10px;
 }
 
 .profile-image {
-    width: 40px; 
-    height: 40px; 
-    border-radius: 50%; 
-    margin-right: 10px; 
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
     object-fit: cover;
 }
 
@@ -108,10 +106,9 @@ header {
 
 .user-position {
     font-size: 12px;
-    color: #d3d3d3; 
+    color: #d3d3d3;
 }
 
-/* Contenido principal */
 .dashboard-container {
     flex: 1;
     padding: 20px;
@@ -120,7 +117,6 @@ header {
     gap: 20px;
 }
 
-/* Barra de herramientas */
 .tools-section {
     display: flex;
     justify-content: space-between;
@@ -191,13 +187,11 @@ header {
     font-weight: bold;
 }
 
-/* Contenedor principal */
 .content-wrapper {
     display: flex;
     gap: 20px;
 }
 
-/* Sidebar mejorada */
 .sidebar {
     width: 250px;
     background-color: var(--card-bg);
@@ -223,15 +217,16 @@ header {
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s;
+    color: white;
 }
 
 .category-item:hover {
-    background-color: var(--primary-light);
+    background-color: var(--primary-dark);
 }
 
 .category-item.active {
-    background-color: var(--primary-color);
-    color: white;
+    background-color: white;
+    color: var(--primary-color);
 }
 
 .category-item.active .category-icon {
@@ -245,7 +240,6 @@ header {
     transition: all 0.3s;
 }
 
-/* Contenido principal */
 .main-content {
     flex: 1;
     display: flex;
@@ -253,7 +247,6 @@ header {
     gap: 20px;
 }
 
-/* Tarjetas de resumen */
 .summary-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -341,7 +334,6 @@ header {
     margin-top: 3px;
 }
 
-/* Gráfico de resumen */
 .chart-container {
     display: flex;
     align-items: center;
@@ -352,11 +344,8 @@ header {
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    background: conic-gradient(
-        var(--primary-color) 0% calc(var(--percentage) * 1%),
-        var(--secondary-color) 0% 100%
-    );
     position: relative;
+    overflow: hidden;
 }
 
 .chart-slice {
@@ -365,40 +354,8 @@ header {
     height: 100%;
     border-radius: 50%;
     clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%);
+    transform-origin: center;
 }
-
-.chart-slice.med {
-    background: conic-gradient(
-        var(--primary-color) 0% 35%,
-        transparent 35% 100%
-    );
-}
-
-.chart-slice.food {
-    background: conic-gradient(
-            #4CAF50 0% 25%,
-            transparent 25% 100%
-    );
-    transform: rotate(35deg);
-}
-
-.chart-slice.acc {
-    background: conic-gradient(
-            #2196F3 0% 20%,
-            transparent 20% 100%
-    );
-    transform: rotate(60deg);
-}
-
-.chart-slice.ins {
-    background: conic-gradient(
-            #9C27B0 0% 20%,
-            transparent 20% 100%
-    );
-    transform: rotate(80deg);
-}
-
-
 
 .chart-legend {
     display: flex;
@@ -436,7 +393,6 @@ header {
     background-color: #9C27B0;
 }
 
-/* Sección de productos */
 .products-section {
     background-color: var(--card-bg);
     border-radius: 10px;
@@ -488,7 +444,6 @@ header {
     color: white;
 }
 
-/* Tabla de inventario */
 .table-container {
     overflow-x: auto;
     padding: 0 10px;
@@ -523,101 +478,6 @@ header {
     background-color: rgba(6, 127, 127, 0.05);
 }
 
-/* Badges de categoría */
-.badge {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 500;
-}
-
-.badge.med {
-    background-color: rgba(6, 127, 127, 0.1);
-    color: var(--primary-color);
-}
-
-.badge.food {
-    background-color: rgba(76, 175, 80, 0.1);
-    color: #4CAF50;
-}
-
-.badge.acc {
-    background-color: rgba(33, 150, 243, 0.1);
-    color: #2196F3;
-}
-
-.badge.ins {
-    background-color: rgba(156, 39, 176, 0.1);
-    color: #9C27B0;
-}
-
-/* Indicador de stock */
-.stock-indicator {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.stock-level {
-    height: 8px;
-    border-radius: 4px;
-    background-color: var(--primary-color);
-}
-
-.stock-level.high {
-    background-color: var(--success-color);
-}
-
-.stock-level.medium {
-    background-color: var(--warning-color);
-}
-
-.stock-level.low {
-    background-color: #ff9800;
-}
-
-.stock-level.critical {
-    background-color: var(--danger-color);
-}
-
-/* Botones de acción */
-.action-buttons {
-    display: flex;
-    gap: 8px;
-}
-
-.icon-btn {
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    border-radius: 50%;
-    background-color: transparent;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.icon-btn:hover {
-    transform: scale(1.1);
-    background-color: var(--primary-light);
-}
-
-.view-btn:hover {
-    color: var(--primary-color);
-}
-
-.edit-btn:hover {
-    color: #2196F3;
-}
-
-.delete-btn:hover {
-    color: var(--danger-color);
-}
-
-/* Botones flotantes */
 .floating-actions {
     position: fixed;
     bottom: 30px;
@@ -670,7 +530,6 @@ header {
     opacity: 1;
 }
 
-/* Footer */
 .main-footer {
     background-color: var(--primary-color);
     color: white;
@@ -680,12 +539,11 @@ header {
     margin-top: auto;
 }
 
-/* Responsive */
 @media (max-width: 992px) {
     .content-wrapper {
         flex-direction: column;
     }
-    
+
     .sidebar {
         width: 100%;
     }
@@ -696,27 +554,37 @@ header {
         flex-direction: column;
         align-items: stretch;
     }
-    
+
     .search-container {
         max-width: 100%;
     }
-    
+
     .summary-cards {
         grid-template-columns: 1fr;
     }
 }
-
-.category-item {
+/* Botones de acción profesionales */
+.edit-btn, .delete-btn {
+    padding: 6px 10px;
+    font-size: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: white;
+    color: var(--primary-color);
     cursor: pointer;
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 5px;
-    transition: background-color 0.3s;
+    transition: all 0.2s ease-in-out;
+    margin: 0 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
-.category-item:hover {
-    background-color: #f0f0f0;
+
+.edit-btn:hover, .delete-btn:hover {
+    background-color: var(--primary-light);
+    border-color: var(--primary-color);
+    color: var(--primary-dark);
+    transform: scale(1.05);
 }
-.category-item.active {
-    background-color: #e0e0ff;
-    font-weight: bold;
+
+.edit-btn:focus, .delete-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(6, 127, 127, 0.2);
 }
