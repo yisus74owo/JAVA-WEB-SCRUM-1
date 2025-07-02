@@ -6,6 +6,7 @@
     <title>Inventario Veterinaria</title>
     <link rel="stylesheet" href="stylesinventory.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 <header>
@@ -17,12 +18,12 @@
             <button class="icon-button">🔔</button>
             <button class="icon-button">⚙️</button>
         </div>
-        <button class="user-button">
+        <button class="user-button" onclick="cerrarSesion()">
             <div class="user-profile">
                 <img src="images/profile-pic.jpg" alt="Imagen de perfil" class="profile-image">
                 <div class="user-info">
-                    <div class="user-name">Juan Pérez</div>
-                    <div class="user-position">Veterinario</div>
+                    <div class="user-name">Cargando...</div>
+                    <div class="user-position">Cargando...</div>
                 </div>
             </div>
         </button>
@@ -35,7 +36,7 @@
             <input type="search" id="filtro-nombre" placeholder="Buscar producto..." class="search-input">
             <button class="search-button" onclick="cargarTabla()">🔍</button>
         </div>
-        <button class="add-product-btn" onclick="window.location.href='crearproducto.html'">
+        <button class="add-product-btn hidden-for-auxiliar" onclick="window.location.href='crearproducto.html'">
             <span>+</span> Agregar Producto
         </button>
     </section>
@@ -67,104 +68,73 @@
 
         <div class="main-content">
             <div class="summary-cards">
-                <div class="summary-card stock-alert">
-                    <h3>Stock bajo</h3>
-                    <div class="alert-items" id="stock-bajo">
-                    </div>
-                </div>
-                <div class="summary-card expiry-alert">
-                    <h3>Próximos a expirar</h3>
-                    <div class="alert-items" id="proximos-expirar">
-                    </div>
-                </div>
-
-                <div class="summary-card inventory-summary">
-                    <h3>Resumen de inventario</h3>
-                    <div class="chart-container">
-                        <div class="chart-legend">
-                            <div class="legend-item"><span class="color-med"></span>Medicamentos</div>
-                            <div class="legend-item"><span class="color-food"></span>Alimentos</div>
-                            <div class="legend-item"><span class="color-acc"></span>Accesorios</div>
-                            <div class="legend-item"><span class="color-ins"></span>Insumos</div>
-                        </div>
-                        <div class="pie-chart" id="pie-chart">
-                        </div>
-                    </div>
-                </div>
+                <!-- ... (contenido existente de summary-cards) ... -->
             </div>
 
             <section class="products-section">
-                <div class="section-header">
-                    <h2>Inventario</h2>
-                    <div class="table-actions">
-                        <button class="action-btn export-btn">Exportar</button>
-                    </div>
-                </div>
-
-                <div class="table-container">
-                    <table class="inventory-table">
-                        <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Categoria</th>
-                            <th>Marca</th>
-                            <th>Cantidad</th>
-                            <th>Precio</th>
-                            <th>Proveedor</th>
-                            <th>Caducidad</th>
-                            <th>Descripcion</th>
-                            <th>Stock</th>
-                            <th>acciones</th>
-                        </tr>
-                        </thead>
-                        <tbody id="product-table-body">
-                        </tbody>
-                    </table>
-                </div>
+                <!-- ... (contenido existente de products-section) ... -->
             </section>
         </div>
     </div>
 </main>
-
-<div class="floating-actions">
-    <button class="fab primary" title="Registrar entrada">
-        <span>+</span>
-    </button>
-    <div class="fab-menu">
-        <button class="fab" title="Ajuste de inventario">📝</button>
-        <button class="fab" title="Generar reporte">📊</button>
-    </div>
-</div>
 
 <footer class="main-footer">
     <p>© 2024 Veterinaria OHANA - Todos los derechos reservados</p>
 </footer>
 
 <script>
+    // Variables globales
+    let usuarioActual = null;
     let categoriaActual = '';
 
-    function getCategoryColor(categoria) {
-        const colors = {
-            'Medicamento': '#067f7f',
-            'Alimento': '#4CAF50',
-            'Accesorio': '#2196F3',
-            'Insumo': '#9C27B0'
-        };
-        return colors[categoria] || '#cccccc';
+    // Función para verificar autenticación y roles
+    async function verificarAutenticacion() {
+        try {
+            const response = await fetch('/api/user-info');
+            if (!response.ok) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            usuarioActual = await response.json();
+            actualizarUIUsuario();
+            cargarTabla();
+            cargarResumen();
+            
+            // Configurar eventos después de cargar
+            document.getElementById("filtro-nombre").addEventListener("keypress", function(event) {
+                if (event.key === "Enter") cargarTabla();
+            });
+            
+        } catch (error) {
+            console.error("Error de autenticación:", error);
+            window.location.href = 'login.html';
+        }
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-        cargarTabla();
-        cargarResumen();
-
-        document.getElementById("filtro-nombre").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                cargarTabla();
+    // Actualizar UI con datos del usuario
+    function actualizarUIUsuario() {
+        if (usuarioActual) {
+            document.querySelector('.user-name').textContent = usuarioActual.nombre;
+            document.querySelector('.user-position').textContent = usuarioActual.rol;
+            
+            // Ocultar elementos según el rol
+            if (usuarioActual.rol !== 'Administrador') {
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
             }
-        });
-    });
+        }
+    }
 
-    // Función para cargar la tabla
+    // Cerrar sesión
+    function cerrarSesion() {
+        fetch('/CerrarSesionServlet', {
+            method: 'GET'
+        }).then(() => {
+            window.location.href = 'login.html?logout=success';
+        });
+    }
+
+    // Función para cargar la tabla con control de roles
     function cargarTabla() {
         const filtro = document.getElementById("filtro-nombre").value;
         let url = "api/productos?nombre=" + encodeURIComponent(filtro);
@@ -175,226 +145,88 @@
 
         fetch(url)
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error en la respuesta del servidor');
-                }
+                if (!response.ok) throw new Error('Error en la respuesta del servidor');
                 return response.text();
             })
             .then(html => {
-                document.getElementById("product-table-body").innerHTML = html;
+                const tableBody = document.getElementById("product-table-body");
+                tableBody.innerHTML = html;
+                
+                // Ocultar acciones si no es administrador
+                if (usuarioActual && usuarioActual.rol !== 'Administrador') {
+                    tableBody.querySelectorAll('.delete-btn, .edit-btn').forEach(btn => {
+                        btn.style.display = 'none';
+                    });
+                }
             })
             .catch(error => {
                 console.error("Error al cargar la tabla:", error);
-                document.getElementById("product-table-body").innerHTML =
+                document.getElementById("product-table-body").innerHTML = 
                     '<tr><td colspan="11">Error al cargar los datos. Intente nuevamente.</td></tr>';
             });
     }
 
-    // Función para eliminar producto
+    // Función para eliminar producto (solo admin)
     function eliminarProducto(idProducto, boton) {
-        if (!confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+        if (!usuarioActual || usuarioActual.rol !== 'Administrador') {
+            mostrarNotificacion('Acceso denegado: Se requiere rol de Administrador', 'error');
             return;
         }
+
+        if (!confirm('¿Estás seguro de que deseas eliminar este producto?')) return;
 
         fetch(`api/productos/${idProducto}`, {
             method: 'DELETE'
         })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => { throw new Error(err.error || 'Error al eliminar'); });
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    mostrarNotificacion('Producto eliminado correctamente', 'success');
-
-                    // Eliminar la fila de la tabla
-                    const fila = boton.closest('tr');
-                    fila.style.transition = 'all 0.3s';
-                    fila.style.opacity = '0';
-                    setTimeout(() => {
-                        fila.remove();
-                        cargarResumen();
-                    }, 300);
-                } else {
-                    throw new Error(data.error || 'Error desconocido');
-                }
-            })
-            .catch(error => {
-                console.error('Error al eliminar:', error);
-                mostrarNotificacion('Error: ' + error.message, 'error');
-            });
+        .then(response => {
+            if (!response.ok) throw new Error('Error al eliminar');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                mostrarNotificacion('Producto eliminado correctamente', 'success');
+                const fila = boton.closest('tr');
+                fila.style.transition = 'all 0.3s';
+                fila.style.opacity = '0';
+                setTimeout(() => {
+                    fila.remove();
+                    cargarResumen();
+                }, 300);
+            }
+        })
+        .catch(error => {
+            console.error('Error al eliminar:', error);
+            mostrarNotificacion('Error: ' + error.message, 'error');
+        });
     }
 
+    // Función para editar producto (solo admin)
+    function editarProducto(idProducto) {
+        if (!usuarioActual || usuarioActual.rol !== 'Administrador') {
+            mostrarNotificacion('Acceso denegado: Se requiere rol de Administrador', 'error');
+            return;
+        }
+        window.location.href = `producto.html?id=${idProducto}`;
+    }
+
+    // Mostrar notificación
     function mostrarNotificacion(mensaje, tipo) {
         const notificacion = document.createElement('div');
         notificacion.className = `notificacion ${tipo}`;
         notificacion.textContent = mensaje;
-
         document.body.appendChild(notificacion);
 
-        setTimeout(() => {
-            notificacion.style.opacity = '1';
-        }, 10);
-
+        setTimeout(() => notificacion.style.opacity = '1', 10);
         setTimeout(() => {
             notificacion.style.opacity = '0';
-            setTimeout(() => {
-                document.body.removeChild(notificacion);
-            }, 300);
+            setTimeout(() => document.body.removeChild(notificacion), 300);
         }, 3000);
     }
-    function editarProducto(idProducto) {
-        window.location.href = `${window.location.origin}/JAVA_WEB_SCRUM_1_war_exploded/producto.html?id=${idProducto}`;
-    }
-    function cargarResumen() {
-        fetch("api/resumen")
-            .then(response => response.json())
-            .then(data => {
-                // Stock bajo
-                const stockBajoContainer = document.getElementById("stock-bajo");
-                stockBajoContainer.innerHTML = '';
-                if (data.stockBajo.length === 0) {
-                    stockBajoContainer.innerHTML = '<p class="empty-message">No hay productos con stock bajo.</p>';
-                } else {
-                    data.stockBajo.forEach(producto => {
-                        const porcentaje = (producto.Cantidad_Producto / producto.Stock_Producto) * 100;
-                        let clase = '';
-                        if (porcentaje < 20) clase = 'critical';
-                        else if (porcentaje < 40) clase = 'warning';
 
-                        stockBajoContainer.innerHTML += `
-                        <div class="alert-item ${clase}">
-                            <span class="product-id">${producto.idProducto}</span>
-                            <span class="product-name">${producto.Nombre_Producto}</span>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${porcentaje}%"></div>
-                                <span class="progress-text">${Math.round(porcentaje)}%</span>
-                            </div>
-                        </div>
-                    `;
-                    });
-                }
+    // Inicializar cuando el DOM esté listo
+    document.addEventListener("DOMContentLoaded", verificarAutenticacion);
 
-                // Próximos a expirar
-                const expirarContainer = document.getElementById("proximos-expirar");
-                expirarContainer.innerHTML = '';
-                if (data.proximosExpirar.length === 0) {
-                    expirarContainer.innerHTML = '<p class="empty-message">No hay productos próximos a expirar.</p>';
-                } else {
-                    data.proximosExpirar.forEach(producto => {
-                        const fechaCad = new Date(producto.Fecha_Caducidad);
-                        const hoy = new Date();
-                        const diffTime = fechaCad - hoy;
-                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                        let clase = '';
-                        if (diffDays < 30) clase = 'critical';
-                        else if (diffDays < 90) clase = 'warning';
-
-                        expirarContainer.innerHTML += `
-                        <div class="alert-item ${clase}">
-                            <span class="product-id">${producto.idProducto}</span>
-                            <span class="product-name">${producto.Nombre_Producto}</span>
-                            <span class="expiry-date">Vence: ${fechaCad.toLocaleDateString()}</span>
-                        </div>
-                    `;
-                    });
-                }
-                // Gráfico de pastel corregido
-                const pieChart = document.getElementById("pie-chart");
-                pieChart.innerHTML = '';
-
-                if (!data.resumenCategorias || data.resumenCategorias.total === 0) {
-                    pieChart.innerHTML = '<p class="empty-message">No hay datos para mostrar.</p>';
-                    return;
-                }
-
-                const svgNS = "http://www.w3.org/2000/svg";
-                const svg = document.createElementNS(svgNS, "svg");
-                svg.setAttribute("viewBox", "0 0 200 200");
-                svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
-                svg.style.width = "100%";
-                svg.style.height = "100%";
-
-                // Círculo base transparente
-                const backgroundCircle = document.createElementNS(svgNS, "circle");
-                backgroundCircle.setAttribute("cx", "100");
-                backgroundCircle.setAttribute("cy", "100");
-                backgroundCircle.setAttribute("r", "80");
-                backgroundCircle.setAttribute("fill", "transparent");
-                backgroundCircle.setAttribute("stroke", "#e0e0e0");
-                backgroundCircle.setAttribute("stroke-width", "1");
-                svg.appendChild(backgroundCircle);
-
-                let startAngle = -90; // Comenzar desde arriba
-                data.resumenCategorias.categorias.forEach(cat => {
-                    const percentage = cat.cantidad / data.resumenCategorias.total;
-                    if (percentage > 0) {
-                        const endAngle = startAngle + percentage * 360;
-
-                        const path = document.createElementNS(svgNS, "path");
-                        const commands = describeArc(100, 100, 80, startAngle, endAngle);
-                        path.setAttribute("d", commands);
-                        path.setAttribute("fill", getCategoryColor(cat.categoria));
-                        path.setAttribute("stroke", "#ffffff");
-                        path.setAttribute("stroke-width", "1");
-                        svg.appendChild(path);
-
-                        startAngle = endAngle;
-                    }
-                });
-
-                pieChart.appendChild(svg);
-            })
-            .catch(error => {
-                console.error("Error al cargar el resumen:", error);
-                document.getElementById("pie-chart").innerHTML = '<p class="empty-message">Error al cargar datos</p>';
-            });
-    }
-
-    function describeArc(x, y, radius, startAngle, endAngle) {
-        const start = polarToCartesian(x, y, radius, endAngle);
-        const end = polarToCartesian(x, y, radius, startAngle);
-        const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-
-        return [
-            "M", x, y,
-            "L", start.x, start.y,
-            "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y,
-            "Z"
-        ].join(" ");
-    }
-
-    function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
-        const angleInRadians = angleInDegrees * Math.PI / 180.0;
-        return {
-            x: centerX + (radius * Math.cos(angleInRadians)),
-            y: centerY + (radius * Math.sin(angleInRadians))
-        };
-    }
-
-    function filtrarPorCategoria(categoria) {
-        categoriaActual = categoria;
-
-        document.querySelectorAll('.category-item').forEach(item => {
-            item.classList.remove('active');
-        });
-
-        if (categoria) {
-            const items = document.querySelectorAll('.category-item');
-            for (let item of items) {
-                if (item.textContent.includes(categoria)) {
-                    item.classList.add('active');
-                    break;
-                }
-            }
-        }
-
-        cargarTabla();
-    }
-
+    // ... (resto de tus funciones existentes como cargarResumen, filtrarPorCategoria, etc) ...
 </script>
 </body>
 </html>

@@ -123,37 +123,40 @@
             <p><a href="restaurar.html">¿Olvidaste tu contraseña?</a></p>
         </div>
     </form>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
+    <!-- ... (código existente) ... -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Verificar si ya está logueado
+        fetch('/api/user-info')
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = 'inventorymodule.html';
+                }
+            });
 
-            // Manejar mensajes con SweetAlert (más profesional que alert())
-            if (urlParams.has('error')) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Credenciales incorrectas. Por favor, intente nuevamente.',
-                    confirmButtonColor: '#3085d6'
-                });
-            }
+        // Manejar mensajes con SweetAlert
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('error')) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Credenciales incorrectas. Por favor, intente nuevamente.',
+                confirmButtonColor: '#3085d6'
+            });
+        }
 
-            if (urlParams.has('logout')) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Sesión cerrada',
-                    text: 'Has salido del sistema correctamente.',
-                    confirmButtonColor: '#3085d6',
-                    timer: 3000
-                });
-            }
-
-            // Limpiar parámetros de la URL sin recargar
-            if (window.history.replaceState) {
-                const cleanUrl = window.location.pathname;
-                window.history.replaceState({}, document.title, cleanUrl);
-            }
-        });
-    </script>
+        if (urlParams.has('logout')) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Sesión cerrada',
+                text: 'Has salido del sistema correctamente.',
+                confirmButtonColor: '#3085d6',
+                timer: 3000
+            });
+        }
+    });
+</script>
+<!-- ... (resto del código) ... -->
 </section>
 
 </body>

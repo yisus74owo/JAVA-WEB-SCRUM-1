@@ -9,6 +9,7 @@ public class Usuario implements Serializable {
     private String email;     // Guarda el correo del usuario
     private String password;  // Guarda la contraseña del usuario
     private String nombre;    // Guarda el nombre del usuario
+    private String rol; 
 
     // Constructor vacío (por defecto), necesario si no se pasa ningún dato al crear un usuario.
     public Usuario() {}
@@ -49,5 +50,13 @@ public class Usuario implements Serializable {
     // Permite cambiar el nombre del usuario
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getRol() {
+        return rol;
+    }
+
+    public void setRol(String rol) {
+        this.rol = rol;
     }
 }
