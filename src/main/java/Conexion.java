@@ -3,34 +3,16 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Conexion {
-
     private static final String URL = "jdbc:mysql://localhost:3306/mydb";
     private static final String USER = "root";
-    private static final String PASSWORD = "JUAncHitoM4R$n1t0"; // Pon aquí tu contraseña si tiene
+    private static final String PASSWORD = "TU_CONTRASEÑA";
 
-    public static Connection conectar() {
-        Connection conexion = null;
-
+    public static Connection conectar() throws SQLException {
         try {
-            // Cargar el driver de MySQL (opcional desde JDBC 4.0, pero recomendado)
             Class.forName("com.mysql.cj.jdbc.Driver");
-
-            // Establecer la conexión
-            conexion = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Conexión exitosa a la base de datos");
+            return DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (ClassNotFoundException e) {
-            System.out.println("Error: No se encontró el driver de MySQL");
-            e.printStackTrace();
-        } catch (SQLException e) {
-            System.out.println("Error al conectar a la base de datos");
-            e.printStackTrace();
+            throw new SQLException("Error al cargar el driver de MySQL", e);
         }
-
-        return conexion;
-    }
-
-    public static void main(String[] args) {
-        // Probar conexión
-        conectar();
     }
 }
