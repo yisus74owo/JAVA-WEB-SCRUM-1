@@ -1,6 +1,6 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-
+import org.mindrot.jbcrypt.BCrypt;
 import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -37,7 +37,7 @@ public class RegistroServlet extends HttpServlet {
             String nombreUsuario = request.getParameter("Nombre_usuario");
             String apellidoUsuario = request.getParameter("Apellido_usuario");
             String correo = request.getParameter("Correo");
-            String contrasena = request.getParameter("Contrasena"); // Sin 'ñ'
+            String contrasena = request.getParameter("Contrasena");
             String telefono = request.getParameter("Telefono");
             String direccion = request.getParameter("Direccion");
             String tipoDocumento = request.getParameter("Tipo_documento");
@@ -91,7 +91,8 @@ public class RegistroServlet extends HttpServlet {
                 return;
             }
 
-            // AQUI NO SE HACE HASHING DE LA CONTRASEÑA
+            // Cifrar la contraseña con BCrypt
+            String hashedPassword = BCrypt.hashpw(contrasena, BCrypt.gensalt());
 
             try (Connection conn = Conexion.conectar()) {
 
@@ -123,7 +124,7 @@ public class RegistroServlet extends HttpServlet {
                     }
                 }
 
-                // Insertar usuario
+                // Insertar usuario con contraseña cifrada
                 String insertSql = "INSERT INTO usuarios (Nombre_usuario, Apellido_usuario, Telefono, Correo, Direccion, Contraseña, Estado_usuario, Tipo_documento, Documento_usuario, Rol_IdRol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
                     ps.setString(1, nombreUsuario);
@@ -131,8 +132,8 @@ public class RegistroServlet extends HttpServlet {
                     ps.setString(3, telefono);
                     ps.setString(4, correo);
                     ps.setString(5, direccion);
-                    ps.setString(6, contrasena); // SE INSERTA LA CONTRASEÑA EN TEXTO PLANO
-                    ps.setInt(7, 1); // Correcto para tinyint
+                    ps.setString(6, hashedPassword);
+                    ps.setInt(7, 1);
                     ps.setString(8, tipoDocumento);
                     ps.setString(9, documentoUsuario);
                     ps.setInt(10, rolId);
@@ -140,7 +141,7 @@ public class RegistroServlet extends HttpServlet {
                     int rows = ps.executeUpdate();
                     if (rows > 0) {
                         out.write("{\"success\":true,\"message\":\"Usuario registrado exitosamente.\"}");
-                        System.out.println("Usuario registrado exitosamente: " + correo + " con Rol_IdRol: " + rolId + " (" + nombreRolSeleccionado + ")");
+                        System.out.println("Usuario registrado exitosamente: " + correo);
                     } else {
                         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                         out.write("{\"error\":\"No se pudo registrar el usuario.\"}");
@@ -157,7 +158,7 @@ public class RegistroServlet extends HttpServlet {
                 } else if (e.getMessage().contains("Data too long for column")) {
                     userErrorMessage = "Uno de los campos es demasiado largo. Por favor, revise los datos.";
                 } else if (e.getMessage().contains("Unknown column")) {
-                    userErrorMessage = "Problema con la configuración de la base de datos (columna no encontrada). Por favor, verifica el nombre de las columnas en tu tabla 'usuarios'.";
+                    userErrorMessage = "Problema con la configuración de la base de datos (columna no encontrada).";
                     System.err.println("ERROR: Verifica el 'INSERT INTO usuarios' y los nombres de las columnas en tu DB.");
                 } else if (e.getMessage().contains("Cannot add or update a child row: a foreign key constraint fails")) {
                     userErrorMessage = "Error de rol. Asegúrate de que el rol seleccionado exista.";
