@@ -7,27 +7,101 @@
     <link rel="stylesheet" href="productoform.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* Oculta el formulario por defecto para evitar parpadeos si el JS lo va a mostrar */
+        .product-form-container {
+            display: none; /* Oculto por defecto */
+        }
+        .product-form-container.visible {
+            display: block; /* Visible cuando el JS lo permite */
+        }
+    </style>
 </head>
 <body>
 <div class="product-form-container">
     <form id="productForm" class="product-form">
-        <!-- ... (formulario existente) ... -->
+        <h2>Crear Nuevo Producto</h2>
+
+        <div class="form-group">
+            <label for="Nombre_Producto">Nombre del Producto:</label>
+            <input type="text" id="Nombre_Producto" name="Nombre_Producto" required>
+        </div>
+
+        <div class="form-group">
+            <label for="Categoria">Categoría:</label>
+            <select id="Categoria" name="Categoria" required>
+                <option value="">Seleccione una categoría</option>
+                <option value="Medicamento">Medicamento</option>
+                <option value="Alimento">Alimento</option>
+                <option value="Accesorio">Accesorio</option>
+                <option value="Aseo">Aseo</option>
+                <option value="Juguete">Juguete</option>
+                <option value="Otro">Otro</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="Marca_Producto">Marca:</label>
+            <input type="text" id="Marca_Producto" name="Marca_Producto" required>
+        </div>
+
+        <div class="form-group">
+            <label for="Cantidad_Producto">Cantidad:</label>
+            <input type="number" id="Cantidad_Producto" name="Cantidad_Producto" required min="0">
+        </div>
+
+        <div class="form-group">
+            <label for="Precio_Producto">Precio:</label>
+            <input type="number" id="Precio_Producto" name="Precio_Producto" required min="0" step="0.01">
+        </div>
+
+        <div class="form-group">
+            <label for="Nombre_Proveedor">Proveedor:</label>
+            <input type="text" id="Nombre_Proveedor" name="Nombre_Proveedor">
+        </div>
+
+        <div class="form-group">
+            <label for="caducidad">Fecha de Caducidad:</label>
+            <input type="date" id="caducidad" name="Fecha_Caducidad">
+        </div>
+
+        <div class="form-group">
+            <label for="Descripcion_Producto">Descripción:</label>
+            <textarea id="Descripcion_Producto" name="Descripcion_Producto" rows="4"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="Stock_Producto">Stock:</label>
+            <input type="number" id="Stock_Producto" name="Stock_Producto" required min="0">
+        </div>
+
+        <button type="submit" class="submit-button">Crear Producto</button>
+        <button type="button" class="back-button" onclick="window.location.href='inventorymodule.html'">Volver</button>
     </form>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const productFormContainer = document.querySelector('.product-form-container');
+
         // Verificar autenticación y rol primero
-        fetch('/api/user-info')
+        const contextPath = '/' + window.location.pathname.split('/')[1];
+
+        // *** CAMBIO CLAVE AQUÍ: Añadir credentials: 'include' ***
+        fetch(`${contextPath}/api/user-info`, { credentials: 'include' })
             .then(response => {
+                console.log('DEBUG - fetch /api/user-info response status:', response.status);
                 if (!response.ok) {
+                    console.warn('Advertencia: Respuesta no OK de /api/user-info. Redirigiendo a login.');
                     window.location.href = 'login.html';
                     throw new Error('No autenticado');
                 }
                 return response.json();
             })
             .then(user => {
+                console.log('DEBUG - Usuario recibido:', user);
                 if (user.rol !== 'Administrador') {
+                    console.warn('Advertencia: Rol no es Administrador. Acceso denegado.');
                     Swal.fire({
                         icon: 'error',
                         title: 'Acceso denegado',
@@ -39,19 +113,17 @@
                     return;
                 }
 
-                // Mostrar formulario solo si es admin
-                document.querySelector('.product-form-container').classList.add('visible');
-                
-                // Configurar fecha mínima
+                console.log('DEBUG - Usuario es Administrador. Mostrando formulario.');
+                productFormContainer.classList.add('visible');
+
                 const fechaInput = document.getElementById('caducidad');
                 const hoy = new Date();
                 hoy.setDate(hoy.getDate() + 1);
                 fechaInput.min = hoy.toISOString().split('T')[0];
 
-                // Manejar envío del formulario
                 document.getElementById('productForm').addEventListener('submit', function(e) {
                     e.preventDefault();
-                    
+
                     const formData = new FormData(this);
                     const producto = {
                         Nombre_Producto: formData.get('Nombre_Producto'),
@@ -60,50 +132,59 @@
                         Cantidad_Producto: parseInt(formData.get('Cantidad_Producto')),
                         Precio_Producto: parseFloat(formData.get('Precio_Producto')),
                         Nombre_Proveedor: formData.get('Nombre_Proveedor'),
-                        Fecha_Caducidad: formData.get('Fecha_Caducidad'),
+                        Fecha_Caducidad: formData.get('Fecha_Caducidad') ? new Date(formData.get('Fecha_Caducidad')).toISOString() : null,
                         Descripcion_Producto: formData.get('Descripcion_Producto'),
                         Stock_Producto: parseInt(formData.get('Stock_Producto'))
                     };
 
-                    const contextPath = '/' + window.location.pathname.split('/')[1];
-                    
+                    console.log('DEBUG - Enviando producto:', producto);
+                    console.log('DEBUG - Enviando a URL:', `${contextPath}/api/productos/crear`);
+
+                    // *** También añadir credentials: 'include' al fetch del POST de producto ***
                     fetch(`${contextPath}/api/productos/crear`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(producto)
+                        body: JSON.stringify(producto),
+                        credentials: 'include'
                     })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(err => { 
-                                throw new Error(err.error || 'Error del servidor'); 
+                        .then(response => {
+                            console.log('DEBUG - Respuesta del POST de producto status:', response.status);
+                            if (!response.ok) {
+                                return response.json().then(err => {
+                                    const errorMessage = err.error || 'Error desconocido del servidor';
+                                    console.error('Error en la respuesta del servidor:', errorMessage);
+                                    throw new Error(errorMessage);
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('DEBUG - Producto creado exitosamente:', data);
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Éxito',
+                                text: 'Producto creado correctamente',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                window.location.href = 'inventorymodule.html';
                             });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Éxito',
-                            text: 'Producto creado correctamente',
-                            confirmButtonText: 'OK'
-                        }).then(() => {
-                            window.location.href = 'inventorymodule.html';
+                        })
+                        .catch(error => {
+                            console.error('Error al enviar formulario:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Error al crear producto: ' + error.message,
+                                confirmButtonText: 'OK'
+                            });
                         });
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Error al crear producto: ' + error.message,
-                            confirmButtonText: 'OK'
-                        });
-                    });
                 });
             })
             .catch(error => {
-                console.error('Error:', error);
-                window.location.href = 'login.html';
+                console.error('ERROR CRÍTICO: Fallo al obtener información del usuario o error de red:', error);
+                if (!window.location.href.includes('login.html')) {
+                    window.location.href = 'login.html';
+                }
             });
     });
 </script>

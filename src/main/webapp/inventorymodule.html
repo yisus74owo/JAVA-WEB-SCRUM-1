@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="stylesinventory.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 </head>
 <body>
 <header>
@@ -68,15 +71,75 @@
 
         <div class="main-content">
             <div class="summary-cards">
-                <!-- ... (contenido existente de summary-cards) ... -->
+                <div class="summary-card stock-alert">
+                    <h3>Stock bajo</h3>
+                    <div class="alert-items" id="stock-bajo">
+                    </div>
+                </div>
+                <div class="summary-card expiry-alert">
+                    <h3>Próximos a expirar</h3>
+                    <div class="alert-items" id="proximos-expirar">
+                    </div>
+                </div>
+
+                <div class="summary-card inventory-summary">
+                    <h3>Resumen de inventario</h3>
+                    <div class="chart-container">
+                        <div class="chart-legend">
+                            <div class="legend-item"><span class="color-med"></span>Medicamentos</div>
+                            <div class="legend-item"><span class="color-food"></span>Alimentos</div>
+                            <div class="legend-item"><span class="color-acc"></span>Accesorios</div>
+                            <div class="legend-item"><span class="color-ins"></span>Insumos</div>
+                        </div>
+                        <div class="pie-chart" id="pie-chart">
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <section class="products-section">
-                <!-- ... (contenido existente de products-section) ... -->
+                <div class="section-header">
+                    <h2>Inventario</h2>
+                    <div class="table-actions">
+                        <button class="action-btn export-btn" onclick="exportarProductos()">Exportar</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="inventory-table">
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Categoria</th>
+                            <th>Marca</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+                            <th>Proveedor</th>
+                            <th>Caducidad</th>
+                            <th>Descripcion</th>
+                            <th>Stock</th>
+                            <th>acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody id="product-table-body">
+                        <tr><td colspan="10">Cargando productos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </section>
         </div>
     </div>
 </main>
+
+<div class="floating-actions">
+    <button class="fab primary" title="Registrar entrada">
+        <span>+</span>
+    </button>
+    <div class="fab-menu">
+        <button class="fab" title="Ajuste de inventario">📝</button>
+        <button class="fab" title="Generar reporte">📊</button>
+    </div>
+</div>
 
 <footer class="main-footer">
     <p>© 2024 Veterinaria OHANA - Todos los derechos reservados</p>
@@ -84,60 +147,91 @@
 
 <script>
     // Variables globales
-    let usuarioActual = null;
+    let usuarioActual = null; // Para almacenar la info del usuario logueado
     let categoriaActual = '';
 
-    // Función para verificar autenticación y roles
+    // Obtener el context path dinámicamente (más robusto para diferentes despliegues)
+    const contextPath = window.location.pathname.substring(0, window.location.pathname.indexOf("/", 2)) || '';
+    // Ejemplo: Si la URL es http://localhost:8080/JAVA_WEB_SCRUM_1_war_exploded/inventorymodule.html
+    // contextPath será "/JAVA_WEB_SCRUM_1_war_exploded"
+
+    function getCategoryColor(categoria) {
+        const colors = {
+            'Medicamento': '#067f7f',
+            'Alimento': '#4CAF50',
+            'Accesorio': '#2196F3',
+            'Insumo': '#9C27B0'
+        };
+        return colors[categoria] || '#cccccc';
+    }
+
+    // Función principal para verificar autenticación y cargar datos iniciales
     async function verificarAutenticacion() {
         try {
-            const response = await fetch('/api/user-info');
+            // Se hace la llamada a /api/user-info para obtener el usuario actual
+            const response = await fetch(contextPath + '/api/user-info');
+
             if (!response.ok) {
-                window.location.href = 'login.html';
+                // Si la respuesta no es OK, significa que la sesión no es válida
+                // o no se encontró el usuario. REDIRIGIR AL LOGIN.
+                console.error("Error al obtener información del usuario. Redirigiendo a login.");
+                window.location.href = contextPath + '/login.html';
                 return;
             }
-            
-            usuarioActual = await response.json();
-            actualizarUIUsuario();
-            cargarTabla();
-            cargarResumen();
-            
-            // Configurar eventos después de cargar
+
+            usuarioActual = await response.json(); // Parsea la respuesta JSON al objeto usuarioActual
+            actualizarUIUsuario(); // Actualiza la interfaz con los datos del usuario
+            cargarTabla(); // Carga los datos de la tabla de productos
+            cargarResumen(); // Carga los datos del resumen
+
+            // Configurar eventos
             document.getElementById("filtro-nombre").addEventListener("keypress", function(event) {
-                if (event.key === "Enter") cargarTabla();
+                if (event.key === "Enter") {
+                    cargarTabla();
+                }
             });
-            
+
         } catch (error) {
-            console.error("Error de autenticación:", error);
-            window.location.href = 'login.html';
+            console.error("Error de autenticación (fetch falló o error de red):", error);
+            // Si hay un error de red o de otro tipo en el fetch, también redirigir
+            window.location.href = contextPath + '/login.html';
         }
     }
 
-    // Actualizar UI con datos del usuario
+    // Función para actualizar el nombre y rol del usuario en la UI y controlar la visibilidad de elementos
     function actualizarUIUsuario() {
         if (usuarioActual) {
             document.querySelector('.user-name').textContent = usuarioActual.nombre;
             document.querySelector('.user-position').textContent = usuarioActual.rol;
-            
-            // Ocultar elementos según el rol
-            if (usuarioActual.rol !== 'Administrador') {
-                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+
+            const addProductBtn = document.querySelector('.add-product-btn');
+            if (addProductBtn) {
+                // Mostrar/ocultar el botón "Agregar Producto" basado en el rol
+                if (usuarioActual.rol === 'Administrador') {
+                    addProductBtn.classList.remove('hidden-for-auxiliar');
+                } else {
+                    addProductBtn.classList.add('hidden-for-auxiliar');
+                }
             }
         }
     }
 
     // Cerrar sesión
     function cerrarSesion() {
-        fetch('/CerrarSesionServlet', {
+        fetch(contextPath + '/CerrarSesionServlet', {
             method: 'GET'
         }).then(() => {
-            window.location.href = 'login.html?logout=success';
+            window.location.href = contextPath + '/login.html?logout=success';
+        }).catch(error => {
+            console.error("Error al cerrar sesión:", error);
+            Swal.fire('Error', 'No se pudo cerrar la sesión.', 'error');
         });
     }
 
-    // Función para cargar la tabla con control de roles
+    // Función para cargar la tabla de productos
     function cargarTabla() {
         const filtro = document.getElementById("filtro-nombre").value;
-        let url = "api/productos?nombre=" + encodeURIComponent(filtro);
+        let url = contextPath + "/api/productos?nombre=" + encodeURIComponent(filtro);
 
         if (categoriaActual) {
             url += "&categoria=" + encodeURIComponent(categoriaActual);
@@ -145,88 +239,341 @@
 
         fetch(url)
             .then(response => {
-                if (!response.ok) throw new Error('Error en la respuesta del servidor');
-                return response.text();
+                if (!response.ok) {
+                    // Si la API de productos no es OK, podría ser por sesión expirada
+                    // o error de permisos. El AuthFilter debería redirigir si es necesario.
+                    throw new Error('Error al cargar productos: ' + response.statusText);
+                }
+                return response.text(); // Asume que la API devuelve HTML directamente
             })
             .then(html => {
                 const tableBody = document.getElementById("product-table-body");
                 tableBody.innerHTML = html;
-                
-                // Ocultar acciones si no es administrador
+
+                // Después de cargar el HTML, ocultar/mostrar acciones según el rol
                 if (usuarioActual && usuarioActual.rol !== 'Administrador') {
                     tableBody.querySelectorAll('.delete-btn, .edit-btn').forEach(btn => {
-                        btn.style.display = 'none';
+                        btn.style.display = 'none'; // Oculta los botones
+                    });
+                } else if (usuarioActual && usuarioActual.rol === 'Administrador') {
+                    tableBody.querySelectorAll('.delete-btn, .edit-btn').forEach(btn => {
+                        btn.style.display = ''; // Asegura que estén visibles para admin (en caso de que el HTML los oculte por defecto)
                     });
                 }
             })
             .catch(error => {
                 console.error("Error al cargar la tabla:", error);
-                document.getElementById("product-table-body").innerHTML = 
-                    '<tr><td colspan="11">Error al cargar los datos. Intente nuevamente.</td></tr>';
+                document.getElementById("product-table-body").innerHTML =
+                    '<tr><td colspan="10">Error al cargar los datos. Intente nuevamente.</td></tr>'; // Colspan ajustado a 10
             });
     }
 
-    // Función para eliminar producto (solo admin)
+    // Función para eliminar producto (solo para Administrador)
     function eliminarProducto(idProducto, boton) {
         if (!usuarioActual || usuarioActual.rol !== 'Administrador') {
-            mostrarNotificacion('Acceso denegado: Se requiere rol de Administrador', 'error');
+            mostrarNotificacion('Acceso denegado: Se requiere rol de Administrador para eliminar productos.', 'error');
             return;
         }
 
-        if (!confirm('¿Estás seguro de que deseas eliminar este producto?')) return;
-
-        fetch(`api/productos/${idProducto}`, {
-            method: 'DELETE'
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Error al eliminar');
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                mostrarNotificacion('Producto eliminado correctamente', 'success');
-                const fila = boton.closest('tr');
-                fila.style.transition = 'all 0.3s';
-                fila.style.opacity = '0';
-                setTimeout(() => {
-                    fila.remove();
-                    cargarResumen();
-                }, 300);
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir esta acción!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminarlo!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`${contextPath}/api/productos/${idProducto}`, { // Usar contextPath
+                    method: 'DELETE'
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => { throw new Error(err.error || 'Error al eliminar'); });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                '¡Eliminado!',
+                                'El producto ha sido eliminado correctamente.',
+                                'success'
+                            );
+                            // Eliminar la fila de la tabla con animación
+                            const fila = boton.closest('tr');
+                            fila.style.transition = 'all 0.3s ease-out';
+                            fila.style.opacity = '0';
+                            setTimeout(() => {
+                                fila.remove();
+                                cargarResumen(); // Recargar resumen después de eliminar
+                            }, 300);
+                        } else {
+                            throw new Error(data.message || 'No se pudo eliminar el producto.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error al eliminar:', error);
+                        Swal.fire(
+                            'Error',
+                            'No se pudo eliminar el producto: ' + error.message,
+                            'error'
+                        );
+                    });
             }
-        })
-        .catch(error => {
-            console.error('Error al eliminar:', error);
-            mostrarNotificacion('Error: ' + error.message, 'error');
         });
     }
 
-    // Función para editar producto (solo admin)
+    // Función para editar producto (solo para Administrador)
     function editarProducto(idProducto) {
         if (!usuarioActual || usuarioActual.rol !== 'Administrador') {
-            mostrarNotificacion('Acceso denegado: Se requiere rol de Administrador', 'error');
+            mostrarNotificacion('Acceso denegado: Se requiere rol de Administrador para editar productos.', 'error');
             return;
         }
-        window.location.href = `producto.html?id=${idProducto}`;
+        window.location.href = `${contextPath}/producto.html?id=${idProducto}`; // Usar contextPath
     }
 
-    // Mostrar notificación
+    // Función para mostrar notificaciones personalizadas (no SweetAlert2)
     function mostrarNotificacion(mensaje, tipo) {
         const notificacion = document.createElement('div');
         notificacion.className = `notificacion ${tipo}`;
         notificacion.textContent = mensaje;
+
         document.body.appendChild(notificacion);
 
-        setTimeout(() => notificacion.style.opacity = '1', 10);
+        // Fuerza un reflow para que la transición CSS funcione
+        notificacion.offsetWidth;
+
+        setTimeout(() => {
+            notificacion.style.opacity = '1';
+        }, 10); // Un pequeño retraso para asegurar que la transición se aplique
+
         setTimeout(() => {
             notificacion.style.opacity = '0';
-            setTimeout(() => document.body.removeChild(notificacion), 300);
+            setTimeout(() => {
+                document.body.removeChild(notificacion);
+            }, 300); // Espera a que termine la transición de opacidad antes de remover
         }, 3000);
+    }
+
+    // Función para cargar el resumen (stock bajo, próximos a expirar, gráfico)
+    function cargarResumen() {
+        fetch(contextPath + "/api/resumen") // Usar contextPath
+            .then(response => {
+                if (!response.ok) throw new Error('Error al cargar resumen: ' + response.statusText);
+                return response.json();
+            })
+            .then(data => {
+                // Stock bajo
+                const stockBajoContainer = document.getElementById("stock-bajo");
+                stockBajoContainer.innerHTML = '';
+                if (data.stockBajo.length === 0) {
+                    stockBajoContainer.innerHTML = '<p class="empty-message">No hay productos con stock bajo.</p>';
+                } else {
+                    data.stockBajo.forEach(producto => {
+                        // Asegurarse de que Stock_Producto no sea 0 para evitar división por cero
+                        const porcentaje = producto.Stock_Producto > 0 ? (producto.Cantidad_Producto / producto.Stock_Producto) * 100 : 0;
+                        let clase = '';
+                        if (porcentaje < 20) clase = 'critical';
+                        else if (porcentaje < 40) clase = 'warning';
+
+                        stockBajoContainer.innerHTML += `
+                        <div class="alert-item ${clase}">
+                            <span class="product-id">#${producto.idProducto}</span>
+                            <span class="product-name">${producto.Nombre_Producto}</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${porcentaje}%"></div>
+                                <span class="progress-text">${Math.round(porcentaje)}%</span>
+                            </div>
+                        </div>
+                    `;
+                    });
+                }
+
+                // Próximos a expirar
+                const expirarContainer = document.getElementById("proximos-expirar");
+                expirarContainer.innerHTML = '';
+                if (data.proximosExpirar.length === 0) {
+                    expirarContainer.innerHTML = '<p class="empty-message">No hay productos próximos a expirar.</p>';
+                } else {
+                    data.proximosExpirar.forEach(producto => {
+                        const fechaCad = new Date(producto.Fecha_Caducidad);
+                        const hoy = new Date();
+                        const diffTime = fechaCad - hoy;
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                        let clase = '';
+                        if (diffDays <= 30) clase = 'critical'; // 30 días o menos
+                        else if (diffDays <= 90) clase = 'warning'; // entre 31 y 90 días
+
+                        expirarContainer.innerHTML += `
+                        <div class="alert-item ${clase}">
+                            <span class="product-id">#${producto.idProducto}</span>
+                            <span class="product-name">${producto.Nombre_Producto}</span>
+                            <span class="expiry-date">Vence: ${fechaCad.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
+                        </div>
+                    `;
+                    });
+                }
+
+                // Gráfico de pastel
+                const pieChart = document.getElementById("pie-chart");
+                pieChart.innerHTML = '';
+
+                if (!data.resumenCategorias || data.resumenCategorias.total === 0) {
+                    pieChart.innerHTML = '<p class="empty-message">No hay datos para mostrar el gráfico.</p>';
+                    return;
+                }
+
+                const svgNS = "http://www.w3.org/2000/svg";
+                const svg = document.createElementNS(svgNS, "svg");
+                svg.setAttribute("viewBox", "0 0 200 200");
+                svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+                svg.style.width = "100%";
+                svg.style.height = "100%";
+
+                // Círculo base transparente (opcional, para un borde o fondo)
+                const backgroundCircle = document.createElementNS(svgNS, "circle");
+                backgroundCircle.setAttribute("cx", "100");
+                backgroundCircle.setAttribute("cy", "100");
+                backgroundCircle.setAttribute("r", "80");
+                backgroundCircle.setAttribute("fill", "transparent");
+                backgroundCircle.setAttribute("stroke", "#e0e0e0"); // Color de fondo del círculo
+                backgroundCircle.setAttribute("stroke-width", "1");
+                svg.appendChild(backgroundCircle);
+
+
+                let currentAngle = 0; // Comenzar desde el lado derecho (0 grados)
+                data.resumenCategorias.categorias.forEach(cat => {
+                    const percentage = cat.cantidad / data.resumenCategorias.total;
+                    if (percentage > 0) { // Solo dibuja si hay cantidad para la categoría
+                        const angle = percentage * 360;
+                        const startAngle = currentAngle;
+                        const endAngle = currentAngle + angle;
+
+                        const path = document.createElementNS(svgNS, "path");
+                        // Ajustamos la función describeArc para que use un punto central y cierre la forma
+                        const commands = describeArcWithCenter(100, 100, 80, startAngle, endAngle);
+                        path.setAttribute("d", commands);
+                        path.setAttribute("fill", getCategoryColor(cat.categoria));
+                        path.setAttribute("stroke", "#ffffff"); // Color del borde entre segmentos
+                        path.setAttribute("stroke-width", "1");
+                        svg.appendChild(path);
+
+                        currentAngle = endAngle; // Actualizar el ángulo de inicio para el siguiente segmento
+                    }
+                });
+
+                pieChart.appendChild(svg);
+            })
+            .catch(error => {
+                console.error("Error al cargar el resumen:", error);
+                document.getElementById("pie-chart").innerHTML = '<p class="empty-message">Error al cargar datos del resumen.</p>';
+            });
+    }
+
+    // Nueva función describeArc para gráficos de pastel (con punto central)
+    function describeArcWithCenter(x, y, radius, startAngle, endAngle) {
+        // Convertir ángulos a coordenadas cartesianas
+        const start = polarToCartesian(x, y, radius, endAngle);
+        const end = polarToCartesian(x, y, radius, startAngle);
+
+        // Flags para arcos grandes (si el ángulo es > 180 grados)
+        const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+
+        // Comandos SVG path para un segmento de pastel
+        return [
+            "M", x, y, // Mover al centro del círculo
+            "L", start.x, start.y, // Línea desde el centro al punto de inicio del arco
+            "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y, // Arco
+            "Z" // Cerrar el camino (línea del final del arco de vuelta al centro)
+        ].join(" ");
+    }
+
+
+    function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+        const angleInRadians = angleInDegrees * Math.PI / 180.0;
+        return {
+            x: centerX + (radius * Math.cos(angleInRadians)),
+            y: centerY + (radius * Math.sin(angleInRadians))
+        };
+    }
+
+    function filtrarPorCategoria(categoria) {
+        categoriaActual = categoria;
+
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        // Activa el ítem de la categoría seleccionada
+        // Para "Todas las categorías", el texto es "Todas las categorías"
+        // Para las otras, el texto del span es el nombre de la categoría
+        let found = false;
+        document.querySelectorAll('.category-item').forEach(item => {
+            const spanText = item.querySelector('span') ? item.querySelector('span').textContent : '';
+            if (categoria === '' && spanText === 'Todas las categorías') {
+                item.classList.add('active');
+                found = true;
+            } else if (spanText === categoria) {
+                item.classList.add('active');
+                found = true;
+            }
+        });
+        // Si no se encontró un elemento específico (ej. si se hace clic en el nombre de una categoría),
+        // pero la categoría es 'Medicamento', etc., activar la que coincida.
+        if (!found && categoria !== '') {
+            const items = document.querySelectorAll('.category-item');
+            for (let item of items) {
+                if (item.querySelector('span') && item.querySelector('span').textContent.includes(categoria)) {
+                    item.classList.add('active');
+                    break;
+                }
+            }
+        }
+
+
+        cargarTabla();
+    }
+
+    // Nueva función para exportar productos
+    function exportarProductos() {
+        if (!usuarioActual || usuarioActual.rol !== 'Administrador') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Acceso Denegado',
+                text: 'Solo los administradores pueden exportar productos.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Construir la URL para la exportación.
+        // Asumimos que el servlet de exportación estará en /api/productos/exportar
+        const exportUrl = contextPath + "/api/productos/exportar";
+
+        // Crea un enlace temporal y simula un clic para iniciar la descarga.
+        // Esto es la forma más común de forzar una descarga desde el navegador.
+        const link = document.createElement('a');
+        link.href = exportUrl;
+        link.download = 'productos_inventario.csv'; // Nombre de archivo sugerido
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        Swal.fire({
+            icon: 'info',
+            title: 'Exportando...',
+            text: 'La descarga de productos debería comenzar pronto.',
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false
+        });
     }
 
     // Inicializar cuando el DOM esté listo
     document.addEventListener("DOMContentLoaded", verificarAutenticacion);
-
-    // ... (resto de tus funciones existentes como cargarResumen, filtrarPorCategoria, etc) ...
 </script>
 </body>
 </html>
